@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -93,6 +94,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             collector.setLastRefreshTime(existing.getLastRefreshTime());
         }
         Map<String, String> issueTypeIds = jiraClient.getJiraIssueTypeIds();
+        LOGGER.warn("***** All issue types: " + issueTypeIds);
         if (!MapUtils.isEmpty(issueTypeIds)){
             collector.getProperties().put("issueTypesMap", issueTypeIds);
         }
@@ -175,7 +177,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         long projectDataStart = System.currentTimeMillis();
         List<Team> teams = featureSettings.isJiraBoardAsTeam() ? jiraClient.getBoards() : jiraClient.getTeams();
         //Add or update teams that we got from api
-        teams.forEach(newTeam -> {
+        //.filter(l -> featureSettings.getProjectIds().contains(l.getTeamId()))
+        teams.stream()
+                .filter(team -> featureSettings.getProjectIds().contains(team.getTeamId()))
+                .forEach(newTeam -> {
             String teamId = newTeam.getTeamId();
             newTeam.setCollectorId(collector.getId());
             LOGGER.info(String.format("Adding %s:%s-%s", collector.getMode(), teamId, newTeam.getName()));
@@ -271,7 +276,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             });
         } else {
             List<Team> boards = getBoardList(collector.getId());
-            boards.forEach(board -> {
+            boards.stream().filter(l -> featureSettings.getProjectIds().contains(l.getTeamId())).forEach(board -> {
                 LOGGER.info("Collecting " + count.incrementAndGet() + " of " + boards.size() + " boards.");
                 long lastCollection = System.currentTimeMillis();
                 FeatureEpicResult featureEpicResult = jiraClient.getIssues(board, issueTypesMap);
@@ -383,7 +388,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private void refreshValidIssues(FeatureCollector collector, List<Team> teams, Set<Scope> scopes) {
         long refreshValidIssuesStart = System.currentTimeMillis();
         List<String> lookUpIds = Objects.equals(collector.getMode(), JiraMode.Board) ? teams.stream().map(Team::getTeamId).collect(Collectors.toList()) : scopes.stream().map(Scope::getpId).collect(Collectors.toList());
-        lookUpIds.forEach(l -> {
+        lookUpIds.stream().filter(l -> featureSettings.getProjectIds().contains(l)).forEach(l -> {
             LOGGER.info("Refreshing issues for " + collector.getMode() + " ID:" + l);
             List<String> issueIds = jiraClient.getAllIssueIds(l, collector.getMode());
             List<Feature> existingFeatures = Objects.equals(collector.getMode(), JiraMode.Board) ? featureRepository.findAllByCollectorIdAndSTeamID(collector.getId(), l) : featureRepository.findAllByCollectorIdAndSProjectID(collector.getId(), l);

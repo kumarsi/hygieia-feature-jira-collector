@@ -5,15 +5,15 @@ if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   exit 0
 fi
 
-if [ "$MONGO_PORT" != "" ]; then
-	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
-	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
-else
-	env 
-	echo "ERROR: MONGO_PORT not defined"
-	exit 1
-fi
+#if [ "$MONGO_PORT" != "" ]; then
+#	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
+#	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+#	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+#else
+#	env
+#	echo "ERROR: MONGO_PORT not defined"
+#	exit 1
+#fi
 
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
@@ -54,8 +54,8 @@ feature.teamQuery=teaminfo
 feature.trendingQuery=trendinginfo
 
 #Jira Connection Details
-feature.jiraProxyUrl=${JIRA_PROXY_URL}
-feature.jiraProxyPort=${JIRA_PROXY_PORT}
+#feature.jiraProxyUrl=${JIRA_PROXY_URL}
+#feature.jiraProxyPort=${JIRA_PROXY_PORT}
 
 # Trending Query:  Number of days in a sprint (not-required)
 feature.sprintDays=${JIRA_SPRINT_DAYS:-60}
@@ -131,7 +131,9 @@ feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_100
 feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME}
 
 # Set this to true if you use boards as team
-feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-false}
+feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-true}
+
+feature.projectIds=${JIRA_PROJECT_IDS:-1234}
 
 EOF
 

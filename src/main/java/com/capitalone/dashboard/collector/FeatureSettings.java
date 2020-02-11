@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Bean to hold settings specific to the Feature collector.
  */
@@ -86,6 +89,8 @@ public class FeatureSettings {
 	 */
 	@Value("${feature.collectorItemOnlyUpdate:true}")
 	private boolean collectorItemOnlyUpdate;
+
+	private String projectIds;
 
 	public boolean isCollectorItemOnlyUpdate() { return collectorItemOnlyUpdate; }
 
@@ -170,5 +175,13 @@ public class FeatureSettings {
 	public boolean isJiraBoardAsTeam() { return jiraBoardAsTeam; }
 
 	public void setJiraBoardAsTeam(boolean jiraBoardAsTeam) { this.jiraBoardAsTeam = jiraBoardAsTeam; }
+
+	public List<String> getProjectIds() {
+		return Arrays.asList(projectIds.split(","));
+	}
+
+	public void setProjectIds(String projectIds) {
+		this.projectIds = projectIds;
+	}
 
 }
