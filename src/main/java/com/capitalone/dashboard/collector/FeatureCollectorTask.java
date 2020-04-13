@@ -23,7 +23,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -138,10 +137,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
         try {
             long startTime = System.currentTimeMillis();
-            long diff = TimeUnit.MILLISECONDS.toHours(startTime - collector.getLastRefreshTime());
+            long diff = TimeUnit.MILLISECONDS.toMinutes(startTime - collector.getLastRefreshTime());
             LOGGER.info("JIRA Collector is set to work in " + collector.getMode() + " mode");
-            if (diff > featureSettings.getRefreshTeamAndProjectHours()) {
-                LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
+            LOGGER.info("Minutes configured to refresh all boards: " + featureSettings.getRefreshTeamAndProjectMinutes());
+            if (diff > featureSettings.getRefreshTeamAndProjectMinutes()) {
+                LOGGER.info("Minutes since last run = " + diff + ". Collector is about to refresh Team/Board information");
                 List<Team> teams = updateTeamInformation(collector);
                 Set<Scope> scopes = updateProjectInformation(collector);
                 if (collector.getLastExecuted() > 0) {
@@ -151,7 +151,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                         refreshValidIssues(collector, teams, scopes);
                     }
                 }
-
                 collector.setLastRefreshTime(System.currentTimeMillis());
                 featureCollectorRepository.save(collector);
                 LOGGER.info("Collected " + teams.size() + " teams and " + scopes.size() + " projects");
