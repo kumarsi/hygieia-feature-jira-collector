@@ -136,7 +136,7 @@ feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-true}
 feature.projectIds=${JIRA_PROJECT_IDS:-1234}
 
 #Set this value greater than zero to refresh the board IDs. Default 24 hours is set by 'refreshTeamAndProjectHours' property.
-feature.refreshBoardIdsMinutes=${REFRESH_BOARD_IDS_MINUTES}
+feature.refreshBoardIdsMinutes=${REFRESH_BOARD_IDS_MINUTES:-0}
 
 EOF
 
