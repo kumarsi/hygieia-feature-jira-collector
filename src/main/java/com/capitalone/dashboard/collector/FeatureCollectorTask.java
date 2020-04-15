@@ -140,8 +140,18 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
             long startTime = System.currentTimeMillis();
             long diff = TimeUnit.MILLISECONDS.toHours(startTime - collector.getLastRefreshTime());
             LOGGER.info("JIRA Collector is set to work in " + collector.getMode() + " mode");
-            if (diff > featureSettings.getRefreshTeamAndProjectHours()) {
-                LOGGER.info("Hours since last run = " + diff + ". Collector is about to refresh Team/Board information");
+            int minutesToRefreshBoards = featureSettings.getRefreshBoardIdsMinutes();
+            int refreshTime = featureSettings.getRefreshTeamAndProjectHours();
+            String timeUnit = "Hours";
+
+            if (minutesToRefreshBoards > 0) {
+                refreshTime = minutesToRefreshBoards;
+                diff = TimeUnit.MILLISECONDS.toMinutes(startTime - collector.getLastRefreshTime());
+                timeUnit = "Minutes";
+            }
+
+            if (diff > refreshTime) {
+                LOGGER.info(timeUnit + " since last run = " + diff + ". Collector is about to refresh Team/Board information");
                 List<Team> teams = updateTeamInformation(collector);
                 Set<Scope> scopes = updateProjectInformation(collector);
                 if (collector.getLastExecuted() > 0) {
@@ -156,7 +166,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                 featureCollectorRepository.save(collector);
                 LOGGER.info("Collected " + teams.size() + " teams and " + scopes.size() + " projects");
             } else {
-                LOGGER.info("Hours since last run = " + diff + ". Collector is only collecting updated/new issues.");
+                LOGGER.info(timeUnit + " since last run = " + diff + ". Collector is only collecting updated/new issues.");
             }
             updateStoryInformation(collector);
             log("Finished", startTime);
