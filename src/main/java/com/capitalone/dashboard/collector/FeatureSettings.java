@@ -31,6 +31,9 @@ public class FeatureSettings {
 	private String jiraOauthExpiretime;
 	private String jiraProxyUrl;
 	private String jiraProxyPort;
+
+//	minutes to fetch new board IDs from the configuration when previous boards are configured.
+	private int refreshBoardIdsMinutes;
 	/**
 	 * In Jira, general IssueType IDs are associated to various "issue"
 	 * attributes. However, there is one attribute which this collector's
@@ -184,4 +187,11 @@ public class FeatureSettings {
 		this.projectIds = projectIds;
 	}
 
+	public int getRefreshBoardIdsMinutes() {
+		return refreshBoardIdsMinutes;
+	}
+
+	public void setRefreshBoardIdsMinutes(int refreshBoardIdsMinutes) {
+		this.refreshBoardIdsMinutes = refreshBoardIdsMinutes;
+	}
 }
