@@ -135,10 +135,6 @@ feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-true}
 
 feature.projectIds=${JIRA_PROJECT_IDS:-1234}
 
-#Set these minutes for configuring widget to pick new board Id's configured in properties. For refreshing current boards, refert to CRON only.
-#Default is 24 hours.
-feature.refreshTeamAndProjectMinutes=${MINUTES_TO_REFRESH_BOARD_IDS:-1440}
-
 EOF
 
 echo "
